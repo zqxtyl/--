@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-card class="box-card">
+    <el-card class="box-card" body-style="height:100%">
       <!-- 头部 -->
       <el-row type="flex" class="header_title">
         <el-col>
@@ -12,6 +12,7 @@
           </el-row>
         </el-col>
       </el-row>
+
       <!-- 搜索区域 -->
       <el-form ref="form" label-width="80px">
         <!-- 第一行 -->
@@ -21,8 +22,8 @@
               <el-select
                 placeholder="请选择"
                 style="width: 100%"
-                v-model="form.subject"
-                @focus="focusShowList"
+                v-model="form.subjectID"
+                @change="onChangelist"
               >
                 <el-option
                   :label="item.label"
@@ -34,22 +35,42 @@
           ></el-col>
           <el-col :span="6">
             <el-form-item label="二级目录">
-              <el-select placeholder="请选择" style="width: 100%">
-                <el-option label="区域一"></el-option>
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.catalogID"
+              >
+                <el-option
+                  :label="item.label"
+                  :value="item.value"
+                  v-for="item in catalog"
+                  :key="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="标签">
-              <el-select placeholder="请选择" style="width: 100%">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.tags"
+              >
+                <el-option
+                  :label="item.label"
+                  :value="item.value"
+                  v-for="item in tagsList"
+                  :key="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="关键字">
-              <el-input v-model="input" placeholder="根据题干搜索"></el-input>
+              <el-input
+                placeholder="根据题干搜索"
+                v-model="form.keyword"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -58,10 +79,14 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="试题类型">
-              <el-select placeholder="请选择" style="width: 100%">
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.questionType"
+              >
                 <el-option
                   :label="item.value"
-                  :value="item.value"
+                  :value="item.id"
                   v-for="item in questionTypeList"
                   :key="item.id"
                 ></el-option>
@@ -69,7 +94,11 @@
           ></el-col>
           <el-col :span="6">
             <el-form-item label="难度">
-              <el-select placeholder="请选择" style="width: 100%">
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.difficulty"
+              >
                 <el-option
                   :label="item.value"
                   :value="item.value"
@@ -81,18 +110,27 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="方向">
-              <el-select placeholder="请选择" style="width: 100%">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.direction"
+              >
+                <!-- <el-option label="区域一" ></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="录入人">
-              <el-select placeholder="请选择" style="width: 100%">
+              <el-select
+                placeholder="请选择"
+                style="width: 100%"
+                v-model="form.creatorID"
+              >
                 <el-option
-                  :label="$store.state.user.name"
-                  value="$store.state.user.name"
+                  :label="item.username"
+                  :value="item.username"
+                  v-for="item in creatorList"
+                  :key="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -103,23 +141,34 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="题目备注">
-              <el-input v-model="input"></el-input> </el-form-item
+              <el-input v-model="form.remarks"></el-input> </el-form-item
           ></el-col>
           <el-col :span="6">
             <el-form-item label="企业简称">
-              <el-input v-model="input"></el-input>
+              <el-input v-model="form.shortName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="城市" >
-              <el-select placeholder="请选择" style="width: 50%" v-model="form.city">
-                <el-option :label="item.text" :value="item.value" v-for="item in dataCity" :key="item.value"></el-option>
-               
+            <el-form-item label="城市">
+              <el-select
+                placeholder="请选择"
+                style="width: 50%"
+                v-model="form.city"
+              >
+                <el-option
+                  :label="item.text"
+                  :value="item.value"
+                  v-for="item in dataCity"
+                  :key="item.value"
+                ></el-option>
               </el-select>
 
-              <el-select placeholder="请选择" style="width: 50%">
-                <el-option label="区域一" value="shanghai"></el-option>
-                
+              <el-select
+                placeholder="请选择"
+                style="width: 50%"
+                v-model="form.province"
+              >
+                <!-- <el-option label="区域一" value=""></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -137,7 +186,7 @@
 
       <!-- 警告文案 -->
       <el-alert
-        :title="`数据一共 ${list.length} 条`"
+        :title="`数据一共 ${counts} 条`"
         type="info"
         show-icon
         :closable="false"
@@ -152,12 +201,13 @@
               @size-change="onPageSizeChange"
               @current-change="onPageChange"
               :current-page="Number(pages.page)"
-              :total="Number(total)"
+              :total="total * 5"
               :page-size="Number(pages.size)"
               :page-sizes="[5, 10, 20, 50]"
               layout="prev, pager, next,sizes, jumper"
             >
             </el-pagination>
+            
           </el-row>
         </template>
       </questionList>
@@ -173,10 +223,12 @@
 <script>
 import questionList from "../components/questionsList _Jichu.form";
 import { list } from "@/api/hmmm/questions";
-import { simple } from "@/api/hmmm/subjects";
+import { simple } from "@/api/hmmm/subjects"; //学科
 import questionAllList from "@/constant/questions";
-import cityDate from "../components/questionsList _Jichu.form/city.data-3";
-
+// import { provinces } from '@/api/hmmm/citys'
+import { catalogSimple } from "@/api/hmmm/directorys";
+import { tagsSimple } from "@/api/hmmm/tags";
+import { simpleList } from "@/api/base/users";
 export default {
   name: "question",
   components: {
@@ -204,62 +256,104 @@ export default {
         page: 1,
         size: 10,
       },
-      total: 1,
+
+      total: 0,
+      counts: 0,
       subjectList: [],
+      catalog: [], //二级目录
+      tagsList: [], //标签目录
+      creatorList: [],
       // from
       form: {
-        catalog: "",
-        catalogID: "",
-        subject: "",
-        city:'',
-
+        catalogID: "", // 二级目录
+        subjectID: "", //学科
+        city: "", //市
+        province: "", //省
+        questionType: "", // 试题类型
+        difficulty: "", //难度
+        direction: "", //方向
+        creatorID: "", //录入人
+        tags: "", //
+        remarks: "", //题目备注
+        shortName: "", //企业简称
+        keyword: "", //关键字
       },
       questionTypeList: [], // 试题的类型
       difficultyList: [], //难度的列表
-      dataCity:[] // 城市列表
-      
+      dataCity: [], // 城市列表
     };
   },
   created() {
     this.getQuestionList();
-    this.dataCity = cityDate.cityData3
+    this.simpleList();
+    // this.dataCity = provinces
+    this.onsubjectList();
     this.questionTypeList = questionAllList.questionType;
     this.difficultyList = questionAllList.difficulty;
   },
   methods: {
+    //获取列表
     async getQuestionList() {
-      const { data } = await list({
+      const { data,data:{pages} } = await list({
         page: this.pages.page,
         pagesize: this.pages.size,
       });
-      this.total = data.pages;
+      this.total = pages;
+      this.counts = data.counts;
       console.log(data);
 
       this.list = data.items;
       console.log(this.list);
     },
+
     // 	每页条数 改变
-    onPageSizeChange(val) {
-      // console.log(val);
+   async onPageSizeChange(val) {
+      console.log(val);
+     await this.$nextTick()
       this.pages.size = val;
       this.getQuestionList();
     },
     // 改变页码时
     onPageChange(val) {
+      console.log(val);
       this.pages.page = val;
       this.getQuestionList();
     },
+
     // 点击搜索按钮
     async searchList() {
       const res = await list(this.form.subject);
       console.log(res);
     },
-    // 获得焦点，获取简单学科列表
-    async focusShowList() {
+
+    // 获取简单学科列表
+    async onsubjectList() {
       // console.log(11);
       const { data } = await simple();
-      console.log(data);
+      // console.log(data);
       this.subjectList = data;
+    },
+
+    // 获取录入人列表
+    async simpleList() {
+      const res = await simpleList();
+      //  console.log(res.data);
+      this.creatorList = res.data;
+    },
+    
+    // 改变值，获取目录列表
+    async onChangelist() {
+      this.form.catalogID = "";
+      this.form.tags = "";
+      const res = await catalogSimple({
+        subjectID: this.form.subject,
+      });
+      this.catalog = res.data;
+      const data = await tagsSimple({
+        subjectID: this.form.subject,
+      });
+      console.log(data);
+      this.tagsList = data.data;
     },
   },
 };

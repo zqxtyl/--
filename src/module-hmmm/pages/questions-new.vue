@@ -213,6 +213,34 @@
           >
         </el-form-item>
         <el-form-item label="解析视频" prop="videoURL">
+          <template>
+            <div class="editPage__video">
+              <div class="title">视频设置</div>
+              <div class="img__con">
+                <el-upload
+                  class="avatar-uploader"
+                  action="#"
+                  :show-file-list="false"
+                  :http-request="uploadVideo"
+                >
+                  <video width="100%" height="100px" v-if="videoUrl">
+                    <source :src="videoUrl" type="video/mp4" />
+                  </video>
+                  <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" /> -->
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  <!-- <el-progress
+                    v-if="videoFlag == true"
+                    type="line"
+                    :percentage="videoUploadPercent"
+                    style="margin-top: 30px"
+                  ></el-progress> -->
+                </el-upload>
+
+                <!-- <p>说明: 视频格式为mp4格式，每个视频大小不超过3m</p> -->
+              </div>
+            </div>
+          </template>
+
           <el-input v-model="formData.videoURL"></el-input>
         </el-form-item>
         <el-form-item
@@ -268,6 +296,7 @@ import { add } from "../../api/hmmm/questions";
 export default {
   data() {
     return {
+      videoUrl: "", //视频地址
       //子组件验证
       valueValidate: true,
       qusevalueValidate: true,
@@ -482,6 +511,34 @@ export default {
       }
       return isJPG && isLt2M;
     },
+    //上传 视频
+    uploadVideo({ file }) {
+      console.log(file);
+      this.loading = true;
+      // id:AKIDkLkvwoT3Ur6C7UnwqVwA90mOo184wkQk
+      // keys:GYN3e8RYTDrJXa6OSIwOegV8YkjV3NVP
+      //   console.log('上传')
+      cos.putObject(
+        {
+          Bucket: "tciano-1313341659" /* 必须 */,
+          Region: "ap-nanjing" /* 存储桶所在地域，必须字段 */,
+          Key: file.name /* 必须 */,
+          StorageClass: "STANDARD",
+          Body: file, // 上传文件对象
+          onProgress: function (progressData) {
+            console.log(JSON.stringify(progressData));
+          },
+        },
+        (err, data) => {
+          if (err || data.statusCode !== 200) {
+            return this.$message.error("上传失败，请重试");
+          }
+          this.formData.videoURL = "https://" + data.Location;
+          this.videoUrl = "https://" + data.Location;
+          this.loading = false;
+        }
+      );
+    },
     //删除图片
     onRemove(file) {
       console.log(file);
@@ -531,6 +588,8 @@ export default {
           this.tags = "";
           this.formData.difficulty = "1";
           this.formData.questionType = "1";
+          this.formData.videoURL = "";
+          this.videoUrl = "";
           this.formData.options = [
             { code: "A", title: "", img: "", isRight: false },
             { code: "B", title: "", img: "", isRight: false },

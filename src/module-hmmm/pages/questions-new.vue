@@ -264,7 +264,7 @@ import { simple as dirSimple } from "@/api/hmmm/directorys.js";
 import { simple as subSimple } from "@/api/hmmm/subjects.js";
 import quillEdit from "@/module-hmmm/components/quill-edit";
 import { citys, provinces } from "../../api/hmmm/citys";
-import { add } from "../../api/hmmm/questions";
+import { add, detail } from "../../api/hmmm/questions";
 export default {
   data() {
     return {
@@ -348,11 +348,22 @@ export default {
     }
     this.provinceRules = false;
     // console.log(res);
+    // console.log(this.$route.query.id);
+    //获取试题回显
+    // this.formData
+    this.getBackDetail();
   },
   components: {
     quillEdit,
   },
   methods: {
+    async getBackDetail() {
+      const { data } = await detail({
+        id: this.$route.query.id,
+      });
+      console.log(data);
+      this.formData = data;
+    },
     async getSubList() {
       const { data } = await subSimple();
       this.subList = data;

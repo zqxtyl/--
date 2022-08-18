@@ -8,7 +8,7 @@
         </el-col>
         <el-col>
           <el-row type="flex" justify="end">
-            <el-button type="success" icon="el-icon-delete">新增试题</el-button>
+            <el-button type="success" icon="el-icon-edit"  @click="$router.push('/questions/new')">新增试题</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -115,7 +115,7 @@
                 style="width: 100%"
                 v-model="form.direction"
               >
-                <!-- <el-option label="区域一" ></el-option> -->
+                <el-option :label="item" :value="item"  v-for="(item,index) in directionList" :key="index"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -154,12 +154,13 @@
                 placeholder="请选择"
                 style="width: 50%"
                 v-model="form.city"
+                @change="cityChange"
               >
                 <el-option
-                  :label="item.text"
-                  :value="item.value"
-                  v-for="item in dataCity"
-                  :key="item.value"
+                  :label="item"
+                  :value="item"
+                  v-for="item in provinces"
+                  :key="item"
                 ></el-option>
               </el-select>
 
@@ -168,13 +169,17 @@
                 style="width: 50%"
                 v-model="form.province"
               >
-                <!-- <el-option label="区域一" value=""></el-option> -->
+                <el-option 
+                v-for="item in citys"
+                :key="item"
+                :label="item"
+                :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-row type="flex" justify="end">
-              <el-button>清除</el-button>
+              <el-button @click="clearForm">清除</el-button>
               <el-button type="primary" @click="searchList">搜索</el-button>
             </el-row>
           </el-col>
@@ -193,7 +198,7 @@
       >
       </el-alert>
       <!-- 列表 -->
-      <questionList :tableHead="tableHead" :tableData="list">
+      <questionList :tableHead="tableHead" :tableData="list" @updateList="updateList">
         <template #page>
           <el-row type="flex" justify="end">
             <el-pagination
@@ -225,7 +230,7 @@ import questionList from "../components/questionsList _Jichu.form";
 import { list } from "@/api/hmmm/questions";
 import { simple } from "@/api/hmmm/subjects"; //学科
 import questionAllList from "@/constant/questions";
-// import { provinces } from '@/api/hmmm/citys'
+import { provinces, citys } from '@/api/hmmm/citys'
 import { catalogSimple } from "@/api/hmmm/directorys";
 import { tagsSimple } from "@/api/hmmm/tags";
 import { simpleList } from "@/api/base/users";
@@ -260,8 +265,8 @@ export default {
       total: 0,
       counts: 0,
       subjectList: [],
-      catalog: [], //二级目录
-      tagsList: [], //标签目录
+      catalog: [], //二级目录列表
+      tagsList: [], //标签目录列表
       creatorList: [],
       // from
       form: {
@@ -280,16 +285,19 @@ export default {
       },
       questionTypeList: [], // 试题的类型
       difficultyList: [], //难度的列表
-      dataCity: [], // 城市列表
+      provinces: provinces(),
+      citys: [], //二级城市列表
+      directionList:[] //方向
     };
   },
   created() {
     this.getQuestionList();
     this.simpleList();
-    // this.dataCity = provinces
+    
     this.onsubjectList();
     this.questionTypeList = questionAllList.questionType;
     this.difficultyList = questionAllList.difficulty;
+    this.directionList = questionAllList.direction
   },
   methods: {
     //获取列表
@@ -304,6 +312,32 @@ export default {
 
       this.list = data.items;
       console.log(this.list);
+    },
+    // 通过城市，获取省
+    cityChange(val) {
+      this.form.province = "";
+      this.citys = citys(val);
+    },
+    // 清除按钮
+    clearForm() {
+
+       this.form.catalogID= "", // 二级目录
+        this.form.subjectID= "", //学科
+        this.form.city= "", //市
+        this.form.province= "", //省
+        this.form.questionType= "", // 试题类型
+        this.form.difficulty= "", //难度
+        this.form.direction= "", //方向
+        this.form.creatorID= "", //录入人
+        this.form.tags= "", //
+        this.form.remarks= "", //题目备注
+        this.form.shortName= "", //企业简称
+        this.form.keyword= "" //关键字
+
+    },
+    // 子组件的 自定义事件
+    updateList() {
+      this.getQuestionList()
     },
 
     // 	每页条数 改变
@@ -322,8 +356,38 @@ export default {
 
     // 点击搜索按钮
     async searchList() {
-      const res = await list(this.form.subject);
+      const res = await list({
+        page:1,
+        size:10,
+        subjectID: this.form.subjectID,
+        catalogID: this.form.catalogID,
+        questionType: this.form.questionType,
+        keyword: this.form.keyword,
+        difficulty: this.form.difficulty,	
+        tags: this.form.tags, 
+        province: this.form.province ,
+        city: this.form.city , 
+        remarks:this.form.remarks ,
+        shortName:this.form.shortName , 
+        direction: this.form.direction ,
+        
+      });
+      
+        // this.form.catalogID= "", // 二级目录
+        // this.form.subjectID= "", //学科
+        // this.form.city= "", //市
+        // this.form.province= "", //省
+        // this.form.questionType= "", // 试题类型
+        // this.form.difficulty= "", //难度
+        // this.form.direction= "", //方向
+        // this.form.creatorID= "", //录入人
+        // this.form.tags= "", //
+        // this.form.remarks= "", //题目备注
+        // this.form.shortName= "", //企业简称
+        // this.form.keyword= "", //关键字
+      
       console.log(res);
+      this.list = res.data.items
     },
 
     // 获取简单学科列表

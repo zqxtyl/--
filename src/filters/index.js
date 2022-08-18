@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { questionType, difficulty } from "@/api/hmmm/constants";
 
 function pluralize(time, label) {
   if (time === 1) {
@@ -164,4 +165,14 @@ export function toThousandslsFilter(num) {
 
 export const formatTimeDay = (val) => {
   return dayjs(val).format("YYYY-MM-DD HH:mm:ss");
+};
+
+export const getQuestionType = (val) => {
+  if (!val) return;
+  return questionType.find((item) => item.value == val)?.label;
+};
+// 初始化难度
+export const getDifficulty = (val) => {
+  if (!val) return;
+  return difficulty.find((item) => item.value == val)?.label;
 };

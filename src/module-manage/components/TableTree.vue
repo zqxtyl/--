@@ -7,9 +7,10 @@
     fit
     highlight-current-row
     style="width: 100%"
+
   >
     <el-table-column
-      v-for="(column, index) in columns"
+      v-for="column  in columns"
       :key="column.prop"
       :width="column.width"
       :prop="column.prop"
@@ -25,30 +26,37 @@
         >
         </expand>
         <span v-else>
+          <template v-if="column.value==='title'">
+            <i v-if="scope.row._level==0" style="margin-left:20px"  class="el-icon-folder-opened"></i>
+            <i v-if="scope.row._parent&&!scope.row.is_point" style="margin-left:40px" class="el-icon-document"></i>
+            <i v-if="scope.row.is_point" style="margin-left:60px" class="el-icon-view"></i>
+          </template>
           {{ scope.row[column.value] }}
         </span>
       </template>
     </el-table-column>
     <el-table-column label="操作" width="260" align="center">
       <template slot-scope="scope">
-        <el-button size="mini" type="primary" @click="handleUpdate(scope.row)">
-          修改
-        </el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.row.id)"
-        >
-          删除
-        </el-button>
+         <el-button
+              type="primary"
+              icon="el-icon-edit"
+              circle
+              @click="handleUpdate(scope.row)"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              circle
+              @click="handleDelete(scope)"
+            ></el-button>
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import Utils from "./utils/dataTranslate.js";
-import expand from "./utils/expand";
+import Utils from "@/components/TreeTable/utils/dataTranslate.js";
+import expand from "@/components/TreeTable/utils/expand";
 export default {
   name: "treeTable",
   components: { expand },
@@ -166,4 +174,5 @@ table td {
   color: $color-blue;
   margin-left: -$space-width;
 }
+
 </style>

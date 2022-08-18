@@ -159,3 +159,11 @@ export function toThousandslsFilter (num) {
     .toString()
     .replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ','))
 }
+export function filterAllHtmltag(html) {
+  return html.replace(/<.*?>/ig, '')
+}
+
+
+
+
+

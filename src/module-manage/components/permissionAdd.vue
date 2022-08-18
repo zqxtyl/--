@@ -1,6 +1,6 @@
 <template>
   <div class="add-form">
-    <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible">
+    <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible" >
       <el-form
         :rules="ruleInline"
         ref="dataForm"
@@ -41,14 +41,14 @@ export default {
   props: ['text', 'pageTitle', 'ruleInline'],
   data () {
     return {
-      dialogFormVisible: true,
+      dialogFormVisible: false,
       PermissionGroupsmenu: [],
       defaultProps: {
         label: 'title'
       },
       permissions: [],
       treeCheckedNodes: [],
-      formBase: {
+      formBase: {//编辑
         id: 0,
         create_date: '',
         title: '',
@@ -116,7 +116,7 @@ export default {
   methods: {
     // 弹层显示
     dialogFormV () {
-      this.dialogFormVisible = false
+      this.dialogFormVisible = true
     },
     // 弹层隐藏
     dialogFormH () {
@@ -124,6 +124,7 @@ export default {
     },
     // 退出
     handleClose () {
+      this.dialogFormH()
       this.$emit('handleCloseModal')
     },
     // 表单重置
@@ -226,6 +227,7 @@ export default {
             }
             update(data).then(() => {
               this.$emit('newDataes', this.formBase)
+              console.log(234);
             })
           } else {
             add({
@@ -233,6 +235,7 @@ export default {
               permissions: curPermis
             }).then(() => {
               this.$emit('newDataes', this.formBase)
+                this.handleResetForm()
             })
           }
         } else {

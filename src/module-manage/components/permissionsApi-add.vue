@@ -33,7 +33,7 @@ export default {
   props: ['apiTitle', 'ruleInline'],
   data () {
     return {
-      dialogFormVisible: false,
+      dialogFormVisible: true,
       PermissionGroupsmenu: [],
       defaultProps: {
         label: 'title'
@@ -50,7 +50,7 @@ export default {
   computed: {
     // 菜单权限树
     treeData () {
-      const checkedData = this.PermissionApiData
+      const checkedData = _this.PermissionApiData
 
       const checked = false
       if (_this !== null && _this.formBase.apis.length > 0) {

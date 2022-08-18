@@ -98,7 +98,11 @@
         <el-table-column label="企业简称" prop="shortName"></el-table-column>
         <el-table-column label="标签" prop="tags"></el-table-column>
         <el-table-column label="创建者" prop="creatorID"></el-table-column>
-        <el-table-column label="创建日期" prop="addDate"></el-table-column>
+        <el-table-column label="创建日期">
+          <template v-slot="{ row }">
+            {{ row.addDate | parseTimeByString }}
+          </template>
+        </el-table-column>
         <el-table-column label="备注" prop="remarks"></el-table-column>
         <el-table-column label="状态" prop="state">
           <template v-slot="{ row }">
@@ -188,7 +192,7 @@ export default {
       formBase: {},
       dialogFormVisible: false,
       loading: false,
-      user:{}
+      user: {},
     };
   },
 
@@ -279,29 +283,23 @@ export default {
     },
     //修改状态
     async change(obj) {
-      if (obj.state==1) {
+      if (obj.state == 1) {
         //启用
         await this.$confirm("已成功禁止，确定继续吗");
-        console.log('禁止');
+        console.log("禁止");
         // alert('启用')
-       const data= await changeStatus(
-          obj.id,
-          0
-        );
-        this.$message.success('禁用成功')
-      //   console.log(data);
-      } else if(obj.state==0) {
+        const data = await changeStatus(obj.id, 0);
+        this.$message.success("禁用成功");
+        //   console.log(data);
+      } else if (obj.state == 0) {
         await this.$confirm("已成功启用，确定继续吗");
-        console.log('启动');
+        console.log("启动");
         // alert('禁止')
-       const res= await changeStatus(
-          obj.id,
-          1
-        );
-      //   console.log(res);
-      this.$message.success('启用成功')
+        const res = await changeStatus(obj.id, 1);
+        //   console.log(res);
+        this.$message.success("启用成功");
       }
-      this.getList()
+      this.getList();
     },
   },
   components: {
@@ -324,12 +322,11 @@ export default {
       background-color: #fff;
       width: 1300px;
       height: 35px;
-      font-size: 1px;
-      color: #909399;
       .titleicon {
         // margin-left: 15px;
         padding: 10px;
         background-color: #f4f4f5;
+        color: #909399;
       }
     }
   }

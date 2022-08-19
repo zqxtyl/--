@@ -165,7 +165,14 @@
         </el-row>
       </el-form>
 
-      <!-- //表格  -->
+      <!-- 标签栏 -->
+      <el-tabs v-model="activeName" type="card" @tab-click="changeCheckState">
+        <el-tab-pane label="全部" name="first"> </el-tab-pane>
+        <el-tab-pane label="待审核" name="second"></el-tab-pane>
+        <el-tab-pane label="已审核" name="third"></el-tab-pane>
+        <el-tab-pane label="已拒绝" name="fourth"></el-tab-pane>
+      </el-tabs>
+      <!-- //全部表格  -->
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -234,7 +241,9 @@
         ></el-table-column>
         <el-table-column label="操作" fixed="right" width="200" align="center">
           <template slot-scope="{ row }">
-            <el-button type="text" size="small">预览</el-button>
+            <el-button type="text" size="small" @click="onPreview(row.id)"
+              >预览</el-button
+            >
             <el-button
               type="text"
               size="small"
@@ -283,10 +292,16 @@
       :dialogVisible.sync="dialogVisible"
       @onConfirm="checkBtn"
     />
+    <!-- 预览弹出层 -->
+    <questionsPreview
+      :showpreviewDia.sync="showpreviewDia"
+      :currentQuestionId="currentQuestionId"
+    />
   </div>
 </template>
 
 <script>
+import questionsPreview from "../components/questions-preview.vue";
 import questionsCheckVue from "../components/questions-check.vue";
 import pageTool from "../../module-dashboard/components/pageTool.vue";
 import { direction, chkType, publishType } from "@/api/hmmm/constants";
@@ -308,6 +323,9 @@ import { html2Text, parseTime, parseTimeByString } from "../../filters";
 export default {
   data() {
     return {
+      currentQuestionId: "", //当前点击id
+      showpreviewDia: false, //预览弹出层
+      activeName: "first",
       columnId: null, //当前行id
       dialogVisible: false, //审核弹出层
       subList: [], //学科
@@ -363,6 +381,7 @@ export default {
   components: {
     pageTool,
     questionsCheckVue,
+    questionsPreview,
   },
   methods: {
     async getChoiceList(form) {
@@ -372,18 +391,37 @@ export default {
       });
       console.log(data);
       this.total = data.counts;
-      this.pages = data.pages;
+      this.pages = data.page;
       // this.pageInfo.page = data.page;
       // this.pageInfo.pagesize = data.pagesize;
+      // this.changeCheckState();
+      // this.tableData = data.items;
+
+      // if (this.activeName === "second") {
+      //   //待审核
+      //   const awaitCheck = data.items.filter((item) => item.chkState === 0);
+      //   this.tableData = awaitCheck;
+      //   // console.log(awaitCheck);
+      // } else if (this.activeName === "third") {
+      //   const passCheck = data.items.filter((item) => item.chkState === 1);
+      //   this.tableData = passCheck;
+      // } else if (this.activeName === "fourth") {
+      //   const rejectCheck = data.items.filter((item) => item.chkState === 2);
+      //   this.tableData = rejectCheck;
+      // } else {
+      //   // this.tableData = this.tableData;
+      // }
       this.tableData = data.items;
     },
     pageChange(pageNum) {
       this.pageInfo.page = pageNum;
       this.getChoiceList();
+      this.changeCheckState();
     },
     pageSizeChange(pageSize) {
       this.pageInfo.pagesize = pageSize;
       this.getChoiceList();
+      this.changeCheckState();
     },
     async getSubList() {
       const { data } = await subSimple();
@@ -522,6 +560,43 @@ export default {
         this.$message.success("刪除成功");
         this.getChoiceList();
       });
+    },
+
+    //切换状态标签栏
+    changeCheckState(val) {
+      console.log(this.activeName, val);
+      if (this.activeName === "second") {
+        this.getChoiceList({
+          chkState: 0,
+        });
+        //待审核
+        const awaitCheck = this.tableData.filter((item) => item.chkState === 0);
+        this.tableData = awaitCheck;
+        // console.log(awaitCheck);
+      } else if (this.activeName === "third") {
+        this.getChoiceList({
+          chkState: 1,
+        });
+        const passCheck = this.tableData.filter((item) => item.chkState === 1);
+        this.tableData = passCheck;
+      } else if (this.activeName === "fourth") {
+        this.getChoiceList({
+          chkState: 2,
+        });
+        const rejectCheck = this.tableData.filter(
+          (item) => item.chkState === 2
+        );
+        this.tableData = rejectCheck;
+      } else {
+        this.getChoiceList();
+        this.tableData = this.tableData;
+      }
+    },
+
+    //预览弹窗
+    onPreview(id) {
+      this.showpreviewDia = true;
+      this.currentQuestionId = id;
     },
   },
   created() {

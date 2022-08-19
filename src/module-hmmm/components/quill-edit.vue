@@ -44,7 +44,6 @@ export default {
   },
   data() {
     return {
-      value: "",
       editorOption: {
         placeholder: "请在这里输入",
         theme: "snow", //主题 snow/bubble
@@ -74,17 +73,17 @@ export default {
     };
   },
   props: {
-    // value: {
-    //   type: String,
-    // },
+    value: {
+      type: String,
+    },
   },
   computed: {},
 
   methods: {
     quillInput(e) {
       // console.log(e.target.innerHTML);
-      const content = e.target.innerHTML;
-      this.value = content;
+      // const content = e.target.innerHTML;
+      // this.value = content;
     },
     change(e) {
       // console.log(e);

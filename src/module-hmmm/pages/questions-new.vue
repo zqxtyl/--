@@ -108,8 +108,8 @@
         >
           <quillEdit
             @getQuillQusetionValue="getQuillQusetionValue"
-            v-model="formData.question"
             ref="quilleditQues"
+            :value="quillQuesValue"
           />
         </el-form-item>
         <!-- 单选框按钮 -->
@@ -121,7 +121,7 @@
               v-for="(item, index) in letters"
               :key="item"
             >
-              <el-radio :label="item">{{ item }}</el-radio>
+              <el-radio :label="item"> {{ item }} </el-radio>
               <el-input
                 style="width: 150px"
                 v-model="formData.options[index].title"
@@ -213,6 +213,22 @@
           >
         </el-form-item>
         <el-form-item label="解析视频" prop="videoURL">
+          <div class="img__con">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :http-request="videoRequset"
+              :show-file-list="false"
+            >
+              <video width="100px" v-if="formData.videoURL">
+                <source :src="formData.videoURL" type="video/mp4" />
+              </video>
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+
+            <p>视频格式为mp4格式，每个视频大小不超过3m</p>
+          </div>
+
           <el-input v-model="formData.videoURL"></el-input>
         </el-form-item>
         <el-form-item
@@ -223,6 +239,7 @@
           <quill-edit
             @getQuillAnswerValue="getQuillAnswerValue"
             ref="quilledit"
+            :value="quillAnswerValue"
           />
         </el-form-item>
         <el-form-item label="题目备注" prop="remarks">
@@ -244,7 +261,12 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="addQuestion">确认提交</el-button>
+          <el-button type="success" @click="addQuestion" v-if="$route.query.id"
+            >确认提交</el-button
+          >
+          <el-button type="primary" @click="addQuestion" v-else
+            >确认提交</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
@@ -268,6 +290,8 @@ import { add, detail } from "../../api/hmmm/questions";
 export default {
   data() {
     return {
+      quillAnswerValue: "",
+      quillQuesValue: "",
       //子组件验证
       valueValidate: true,
       qusevalueValidate: true,
@@ -350,19 +374,47 @@ export default {
     // console.log(res);
     // console.log(this.$route.query.id);
     //获取试题回显
-    // this.formData
-    this.getBackDetail();
+    if (this.$route.query.id) {
+      this.getBackDetail();
+    }
   },
   components: {
     quillEdit,
   },
   methods: {
     async getBackDetail() {
+      this.loading = true;
       const { data } = await detail({
         id: this.$route.query.id,
       });
       console.log(data);
+      //多选单选
+      this.changeSingleOrMulit(data.questionType);
+      //处理标签
+      this.tags = data.tags.split(",");
+      //处理多选单选
+      if (data.questionType == "1") {
+        const findItem = data.options.find((item) => item.isRight === 1);
+        console.log(findItem);
+        this.radioOption = findItem.code;
+      } else if (data.questionType == "2") {
+        let arr = [];
+        data.options.forEach((item) => {
+          arr.push(item.code);
+        });
+        console.log(arr.sort());
+        //排序
+        this.checkboxLetters = arr.sort();
+        data.options.forEach((item) => {
+          if (item.isRight === 1) {
+            this.checkBoxList.push(item.code);
+          }
+        });
+      }
+      this.quillAnswerValue = data.answer;
+      this.quillQuesValue = data.question;
       this.formData = data;
+      this.loading = false;
     },
     async getSubList() {
       const { data } = await subSimple();
@@ -458,8 +510,7 @@ export default {
     //上传图片
     onRequest({ file }) {
       this.loading = true;
-      // id:AKIDkLkvwoT3Ur6C7UnwqVwA90mOo184wkQk
-      // keys:GYN3e8RYTDrJXa6OSIwOegV8YkjV3NVP
+
       //   console.log('上传')
       cos.putObject(
         {
@@ -477,6 +528,31 @@ export default {
             return this.$message.error("上传失败，请重试");
           }
           this.formData.options[this.Imgindex].img = "https://" + data.Location;
+          this.loading = false;
+        }
+      );
+    },
+    //视频处理
+    videoRequset({ file }) {
+      this.loading = true;
+
+      //   console.log('上传')
+      cos.putObject(
+        {
+          Bucket: "tciano-1313341659" /* 必须 */,
+          Region: "ap-nanjing" /* 存储桶所在地域，必须字段 */,
+          Key: file.name /* 必须 */,
+          StorageClass: "STANDARD",
+          Body: file, // 上传文件对象
+          onProgress: function (progressData) {
+            console.log(JSON.stringify(progressData));
+          },
+        },
+        (err, data) => {
+          if (err || data.statusCode !== 200) {
+            return this.$message.error("上传失败，请重试");
+          }
+          this.formData.videoURL = "https://" + data.Location;
           this.loading = false;
         }
       );
@@ -532,7 +608,9 @@ export default {
           //清空表单
           this.$refs.quilleditQues._data.value = "";
           this.$refs.quilledit._data.value = "";
-          this.checkBoxList = [];
+          (this.quillAnswerValue = ""),
+            (this.quillQuesValue = ""),
+            (this.checkBoxList = []);
           this.checkList = [];
           (this.letters = ["A", "B", "C", "D"]),
             (this.checkboxLetters = ["A", "B", "C", "D"]),
@@ -570,10 +648,7 @@ export default {
 
     //处理标签
     handleTags(e) {
-      // console.log(e.target);
-      // console.log(this.formData.tags);
       const StringTags = this.tags.toString();
-      // console.log(a);
       this.formData.tags = StringTags;
     },
   },
@@ -661,6 +736,39 @@ export default {
         right: -8px;
         font-size: 18px;
       }
+    }
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 16px;
+    color: #8c939d;
+    width: 350px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+  }
+  .avatar {
+    width: 350px;
+    height: auto;
+    display: block;
+  }
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  .img__con {
+    .el-button {
+      width: 100%;
+      margin: 10px 0 20px 0;
     }
   }
 }

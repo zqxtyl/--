@@ -251,6 +251,8 @@
             v-model="tags"
             multiple
             @change="handleTags"
+            filterable
+            :filter-method="filter"
           >
             <el-option
               v-for="item in tagsList"
@@ -653,8 +655,17 @@ export default {
 
     //处理标签
     handleTags(e) {
+      console.log(e);
       const StringTags = this.tags.toString();
       this.formData.tags = StringTags;
+    },
+    ipt(event) {
+      console.log(event);
+    },
+    filter(val) {
+      // console.log(val);
+      // this.formData.tags = val;
+      // this.tags = val;
     },
   },
 };

@@ -24,6 +24,7 @@
           <el-col :span="6">
             <el-form-item label="学科" prop="subjectID">
               <el-select
+                clearable
                 v-model="formData.subjectID"
                 placeholder="请选择"
                 allow-create=""
@@ -513,6 +514,23 @@ export default {
     onReset() {
       this.$refs.form.resetFields();
       this.formData.city = "";
+      // this.formData = {};
+      this.formData = {
+        subjectID: "", //学科
+        difficulty: "", //难度
+        questionType: "", //试题类型,
+        tags: "", //标签
+        province: "", //企业所在省份
+        city: "", //企业所在城市
+        keyword: "", //关键字
+        remarks: "", //题目备注
+        shortName: "", //企业简称
+        direction: "", //方向
+        creatorID: "", //录入人
+        catalogID: "", //目录
+        chkState: "", //审核 状态
+      };
+      this.formData.difficulty = "";
     },
     //审核
     onCheck(val) {

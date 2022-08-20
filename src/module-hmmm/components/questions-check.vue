@@ -6,14 +6,14 @@
       width="30%"
       @close="onClose"
     >
-      <el-form>
-        <el-form-item>
+      <el-form ref="form">
+        <el-form-item prop="chkState">
           <el-radio-group v-model.number="checkInfo.chkState">
             <el-radio :label="1">通过</el-radio>
             <el-radio :label="2">拒绝</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="chkRemarks">
           <el-input type="textarea" v-model="checkInfo.chkRemarks"></el-input>
         </el-form-item>
       </el-form>
@@ -30,7 +30,7 @@ export default {
   data() {
     return {
       checkInfo: {
-        chkState: null,
+        chkState: 1,
         chkRemarks: "",
       },
     };
@@ -43,9 +43,13 @@ export default {
   methods: {
     onClose() {
       this.$emit("update:dialogVisible", false);
+      this.$refs.form.resetFields();
+      // this.checkInfo = {};
     },
     cancel() {
       this.onClose();
+      this.checkInfo.chkRemarks = "";
+      this.checkInfo.chkState = 1;
     },
     confirm() {
       if (!this.checkInfo.chkRemarks) {
@@ -53,6 +57,8 @@ export default {
       }
       this.onClose();
       this.$emit("onConfirm", this.checkInfo);
+      this.checkInfo.chkRemarks = "";
+      this.checkInfo.chkState = 1;
     },
   },
 };

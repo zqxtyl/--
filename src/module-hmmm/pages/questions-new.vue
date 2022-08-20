@@ -223,7 +223,7 @@
               <video width="100px" v-if="formData.videoURL">
                 <source :src="formData.videoURL" type="video/mp4" />
               </video>
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <i v-else class="el-icon-plus"></i>
             </el-upload>
 
             <p>视频格式为mp4格式，每个视频大小不超过3m</p>
@@ -603,7 +603,12 @@ export default {
           this.$message.warning("请填写必填项");
         } else {
           await add(this.formData);
-          this.$message.success("试题添加成功");
+          if (this.$route.query.id) {
+            this.$router.back();
+            this.$message.success("修改成功");
+          } else {
+            this.$message.success("试题添加成功");
+          }
           this.$refs.form.resetFields();
           //清空表单
           this.$refs.quilleditQues._data.value = "";

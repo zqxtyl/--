@@ -161,7 +161,10 @@ export default {
     goToNew(val) {
       console.log(val);
       this.$router.push({
-        path: "/questions/new",
+        name:'questions-new',
+        query:{
+          id:val.id
+        }
       });
     }
 

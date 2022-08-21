@@ -372,20 +372,7 @@ export default {
         direction: this.form.direction ,
         
       });
-      
-        // this.form.catalogID= "", // 二级目录
-        // this.form.subjectID= "", //学科
-        // this.form.city= "", //市
-        // this.form.province= "", //省
-        // this.form.questionType= "", // 试题类型
-        // this.form.difficulty= "", //难度
-        // this.form.direction= "", //方向
-        // this.form.creatorID= "", //录入人
-        // this.form.tags= "", //
-        // this.form.remarks= "", //题目备注
-        // this.form.shortName= "", //企业简称
-        // this.form.keyword= "", //关键字
-      
+
       console.log(res);
       this.list = res.data.items
     },

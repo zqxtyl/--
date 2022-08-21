@@ -7,7 +7,7 @@
             ><span class="keyword">关键字：</span><el-input
               v-model="keyword"
               placeholder="请输入内容"
-              class="keyword"
+              class="keywordFn"
             ></el-input></span
         ></el-col>
         <el-col>
@@ -205,7 +205,7 @@ export default {
 .keyword{
   width: 80px;
 }
-/deep/.el-input__inner{
+/deep/.keywordFn{
   width: 360px;
 }
 </style>

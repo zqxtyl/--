@@ -140,7 +140,7 @@ export default {
       const findItem = this.currentQuestion.options.find(
         (item) => item.isRight === 1
       );
-      return findItem.code;
+      return findItem?.code || "";
     },
     //多选
     CheckBoxCheck() {
@@ -151,7 +151,7 @@ export default {
         }
       });
       console.log(findItem);
-      return findItem;
+      return findItem || [];
     },
     //题干处理
     question() {

@@ -299,6 +299,7 @@ import {
 export default {
   data() {
     return {
+      // currentId: this.$route.query.id,
       inputsel: "",
       quillAnswerValue: "",
       quillQuesValue: "",
@@ -374,6 +375,8 @@ export default {
     };
   },
   created() {
+    // console.log(this.$route.query.id);
+    // this.currentId = ;
     this.getSubList();
     this.getCompList();
     this.provinces = provinces();
@@ -391,6 +394,43 @@ export default {
   components: {
     quillEdit,
   },
+  watch: {
+    //监听路由id
+    // deep: true,
+    "$route.query.id": {
+      handler(val) {
+        immediate: true;
+        console.log(7879);
+        console.log(val);
+        // if (val === "") {
+        // debugger;
+        console.log(111);
+        //清空表单
+        this.$refs.form.resetFields();
+        this.$refs.quilleditQues._data.value = "";
+        this.$refs.quilledit._data.value = "";
+        (this.quillAnswerValue = ""),
+          (this.quillQuesValue = ""),
+          (this.checkBoxList = []);
+        this.checkList = [];
+        (this.letters = ["A", "B", "C", "D"]),
+          (this.checkboxLetters = ["A", "B", "C", "D"]),
+          (this.radioOption = "");
+        this.formData.question = "";
+        this.formData.answer = "";
+        this.tags = "";
+        this.formData.difficulty = "1";
+        this.formData.questionType = "1";
+        this.formData.options = [
+          { code: "A", title: "", img: "", isRight: false },
+          { code: "B", title: "", img: "", isRight: false },
+          { code: "C", title: "", img: "", isRight: false },
+          { code: "D", title: "", img: "", isRight: false },
+        ];
+        // }
+      },
+    },
+  },
   methods: {
     async getBackDetail() {
       this.loading = true;
@@ -405,8 +445,8 @@ export default {
       //处理多选单选
       if (data.questionType == "1") {
         const findItem = data.options.find((item) => item.isRight === 1);
-        console.log(findItem);
-        this.radioOption = findItem.code;
+        // console.log(findItem);
+        this.radioOption = findItem?.code;
       } else if (data.questionType == "2") {
         let arr = [];
         data.options.forEach((item) => {
@@ -618,9 +658,9 @@ export default {
             this.$message.success("修改成功");
           } else {
             this.$message.success("试题添加成功");
+            //跳转
+            this.$router.push("/questions/list");
           }
-          //跳转
-          this.$router.push("/questions/list");
           // const list = await getList();
           // const choice = await getChoice();
           // console.log(res);

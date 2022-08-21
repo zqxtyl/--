@@ -400,10 +400,8 @@ export default {
     "$route.query.id": {
       handler(val) {
         immediate: true;
-        console.log(7879);
-        console.log(val);
-        // if (val === "") {
-        // debugger;
+        // console.log(7879);
+        // console.log(val);
         console.log(111);
         //清空表单
         this.$refs.form.resetFields();
@@ -427,7 +425,6 @@ export default {
           { code: "C", title: "", img: "", isRight: false },
           { code: "D", title: "", img: "", isRight: false },
         ];
-        // }
       },
     },
   },

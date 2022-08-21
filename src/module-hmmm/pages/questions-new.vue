@@ -245,14 +245,15 @@
         <el-form-item label="题目备注" prop="remarks">
           <el-input type="textarea" v-model="formData.remarks"></el-input>
         </el-form-item>
-        <el-form-item label="试题标签" prop="tags">
+        <el-form-item label="试题标签" prop="tags" class="tags">
           <el-select
             placeholder="请选择试题标签"
             v-model="tags"
             multiple
+            no-match-text="456"
             @change="handleTags"
             filterable
-            :filter-method="filter"
+            allow-create
           >
             <el-option
               v-for="item in tagsList"
@@ -261,6 +262,7 @@
               :label="item.label"
             ></el-option>
           </el-select>
+          <!-- <el-input v-model="formData.tags" class="username"></el-input> -->
         </el-form-item>
         <el-form-item>
           <el-button type="success" @click="addQuestion" v-if="$route.query.id"
@@ -292,6 +294,7 @@ import { add, detail } from "../../api/hmmm/questions";
 export default {
   data() {
     return {
+      inputsel: "",
       quillAnswerValue: "",
       quillQuesValue: "",
       //子组件验证
@@ -652,20 +655,16 @@ export default {
         isRight: false,
       });
     },
-
     //处理标签
-    handleTags(e) {
-      console.log(e);
+    handleTags(event) {
+      console.log(event);
       const StringTags = this.tags.toString();
       this.formData.tags = StringTags;
     },
     ipt(event) {
-      console.log(event);
-    },
-    filter(val) {
-      // console.log(val);
-      // this.formData.tags = val;
-      // this.tags = val;
+      // console.log(111);
+      console.log(event.target.value);
+      this.tagsList = event.target.value;
     },
   },
 };
@@ -786,6 +785,21 @@ export default {
       width: 100%;
       margin: 10px 0 20px 0;
     }
+  }
+  .tags.el-form-item {
+    position: relative;
+  }
+  .el-form-item .username.el-input {
+    position: absolute;
+    top: 0px;
+    left: 25px;
+    width: 190px;
+  }
+  .el-form-item .username.el-input input {
+    // border: 0px;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 15px;
   }
 }
 </style>

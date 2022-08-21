@@ -290,7 +290,12 @@ import { simple as dirSimple } from "@/api/hmmm/directorys.js";
 import { simple as subSimple } from "@/api/hmmm/subjects.js";
 import quillEdit from "@/module-hmmm/components/quill-edit";
 import { citys, provinces } from "../../api/hmmm/citys";
-import { add, detail } from "../../api/hmmm/questions";
+import {
+  add,
+  detail,
+  list as getList,
+  choice as getChoice,
+} from "../../api/hmmm/questions";
 export default {
   data() {
     return {
@@ -602,7 +607,7 @@ export default {
     },
     //添加试题
     async addQuestion() {
-      console.log(this.$refs.quilledit._data.value);
+      // console.log(this.$refs.quilledit._data.value);
       this.$refs.form.validate(async (validate) => {
         if (!validate) {
           this.$message.warning("请填写必填项");
@@ -614,6 +619,13 @@ export default {
           } else {
             this.$message.success("试题添加成功");
           }
+          //跳转
+          this.$router.push("/questions/list");
+          // const list = await getList();
+          // const choice = await getChoice();
+          // console.log(res);
+          // console.log(list.data.items);
+          // console.log(choice.data.items);
           this.$refs.form.resetFields();
           //清空表单
           this.$refs.quilleditQues._data.value = "";

@@ -377,6 +377,7 @@ export default {
       rules: {},
       //表格
       tableData: [],
+      tableLength: this.tableData,
     };
   },
   components: {
@@ -384,12 +385,19 @@ export default {
     questionsCheckVue,
     questionsPreview,
   },
+  watch: {
+    tableLength(val) {
+      immediate: true;
+      console.log(val);
+    },
+  },
   methods: {
     async getChoiceList(form) {
       const { data } = await choice({
         ...this.pageInfo,
         ...form,
       });
+
       console.log(data);
       this.total = data.counts;
       this.pages = data.page;
@@ -413,6 +421,10 @@ export default {
       //   // this.tableData = this.tableData;
       // }
       this.tableData = data.items;
+      if (this.tableData.length === 0 && this.pageInfo.page !== "1") {
+        this.pageInfo.page -= 1;
+        this.getChoiceList();
+      }
     },
     pageChange(pageNum) {
       this.pageInfo.page = pageNum;

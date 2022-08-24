@@ -5,17 +5,15 @@
       <el-row type="flex">
         <el-col>
           <el-form :inline="true" class="demo-form-inline">
-              <el-form-item label="学科名称">
-                <el-input v-model="inp"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button @click="onShow">清除</el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-button @click="onSearch" type="primary"
-                  >搜索</el-button
-                >
-              </el-form-item>
+            <el-form-item label="学科名称">
+              <el-input v-model="inp"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="onShow">清除</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="onSearch" type="primary">搜索</el-button>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col>
@@ -35,7 +33,7 @@
       >
       </el-alert>
       <!-- 表格区域 -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="index" label="序号" width="50">
         </el-table-column>
         <el-table-column prop="subjectName" label="学科名称"> </el-table-column>
@@ -56,21 +54,17 @@
         <el-table-column prop="tags" label="标签"> </el-table-column>
         <el-table-column prop="totals" label="题目数量"> </el-table-column>
         <el-table-column fixed="right" label="操作" width="220">
-          <template slot-scope="{ row }">
-            <el-button
-              type="text"
-              size="small"
-              @click="$router.push('directorys')"
-            >
+          <template v-slot:default="data">
+            <el-button type="text" size="small" @click="directorysJump(data)">
               学科分类
             </el-button>
-            <el-button type="text" size="small" @click="$router.push('tags')">
+            <el-button type="text" size="small" @click="tagsJump(data)">
               学科标签
             </el-button>
-            <el-button type="text" size="small" @click="onAmend(row.id)">
+            <el-button type="text" size="small" @click="onAmend(data)">
               修改
             </el-button>
-            <el-button type="text" size="small" @click="onRemove(row.id)">
+            <el-button type="text" size="small" @click="onRemove(data.row.id)">
               删除
             </el-button>
           </template>
@@ -92,15 +86,18 @@
       </el-row>
     </el-card>
     <SubJects
+      ref="edits"
       :visible.sync="showAddsubjects"
       @add-success="getSubJects"
+      :currentabc="currentabc"
+      :editsList="editsList"
     ></SubJects>
   </div>
 </template>
 
 <script>
 import SubJects from "../components/subjects-add";
-import { detail, list, remove, simple } from "@/api/hmmm/subjects.js";
+import { list, remove } from "@/api/hmmm/subjects.js";
 export default {
   name: "subjects",
   components: {
@@ -108,15 +105,17 @@ export default {
   },
   data() {
     return {
+      labelName: "学科",
       tableData: [],
       inp: "",
       page: {
         page: 1,
         pagesize: 10,
-        counts: 0,
-        pages: 0,
       },
       showAddsubjects: false,
+      currentabc: false,
+      editsList: {},
+      loading: true,
     };
   },
 
@@ -127,6 +126,7 @@ export default {
   methods: {
     //渲染学科列表
     async getSubJects() {
+      this.loading = false;
       const { data } = await list(this.page);
       // console.log(data);
       this.tableData = data.items;
@@ -164,7 +164,9 @@ export default {
       this.getSubJects();
     },
     //点击显示新增弹层
-    showAdd() {
+    async showAdd() {
+      this.currentabc = false;
+      this.editsList = {};
       this.showAddsubjects = true;
     },
     //点击清空
@@ -173,16 +175,33 @@ export default {
     },
     //修改学科
     async onAmend(val) {
+      this.currentabc = true;
       this.showAddsubjects = true;
-      console.log(val);
+      this.editsList = val;
     },
     //搜索学科
     async onSearch() {
-    this.subjectName = this.inp
-    const res = await list(this.subjectName, this.page.page, this.page.pagesize)
-    console.log(this.inp);
-    console.log(this.page);
-    console.log(res);
+      const res = await list({
+        subjectName: this.inp,
+        page: this.page.page,
+        pagesize: this.page.pagesize,
+      });
+      this.tableData = res.data.items;
+    },
+    //学科分类跳转
+    directorysJump(val) {
+      console.log(val.row);
+      this.$router.push({
+        path: "/subjects/directorys",
+        query: val.row,
+      });
+    },
+    //学科标签跳转
+    tagsJump(val) {
+      this.$router.push({
+        path: "/subjects/tags",
+        query: val,
+      });
     },
   },
 };

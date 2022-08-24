@@ -66,7 +66,7 @@
       >
       </el-alert>
       <!-- 表格区域 -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="index" label="序号" width="50">
         </el-table-column>
         <el-table-column prop="subjectName" label="所属学科"> </el-table-column>
@@ -154,12 +154,13 @@ export default {
         page: 1,
         pagesize: 10,
         directoryName: "",
-        subjectID: null,
         states: null,
+        subjectID: null,
       },
       showAddDirectorys: false,
       currentabc: false,
       editsList: {},
+      loading: true,
     };
   },
 
@@ -182,11 +183,23 @@ export default {
         this.isFromSubject = true;
       }
     },
+    tableData: {
+      immediate: true,
+      handler(val) {
+        console.log(this.subjectID);
+        console.log(val.length);
+        if (val.length > 0 && this.subjectID === null) {
+          this.loading = false;
+        } else if (this.subjectID !== null) {
+          this.loading = false;
+        }
+      },
+    },
   },
 
   created() {
-    this.page.subjectID = Number(this.$route?.query?.id);
-    // console.log(this.$route.query);
+    this.page.subjectID = this.$route?.query?.id;
+    console.log(this.$route.query);
     this.getDirectorys();
   },
 
@@ -194,11 +207,14 @@ export default {
     //渲染目录列表
     async getDirectorys() {
       const { data } = await list(this.page);
-      // console.log(data);
+      data.page = +data.page;
+      data.pagesize = +data.pagesize;
+      console.log(data);
       this.tableData = data.items;
       // console.log(this.tableData);
       this.page.counts = data.counts;
       this.page.pages = data.pages;
+      console.log(data.items);
     },
     //获取当前页数并重新渲染
     currentChange(val) {

@@ -119,6 +119,21 @@ export default {
     };
   },
 
+  // watch: {
+  //   tableData: {
+  //     immediate: true,
+  //     handler(val) {
+  //       console.log(this.subjectID);
+  //       console.log(val.length);
+  //       if (val.length > 0 && this.subjectID === null) {
+  //         this.loading = false;
+  //       } else if (this.subjectID !== null) {
+  //         this.loading = false;
+  //       }
+  //     },
+  //   },
+  // },
+
   created() {
     this.getSubJects();
   },
@@ -200,7 +215,7 @@ export default {
     tagsJump(val) {
       this.$router.push({
         path: "/subjects/tags",
-        query: val,
+        query: val.row,
       });
     },
   },

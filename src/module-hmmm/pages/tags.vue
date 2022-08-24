@@ -141,6 +141,7 @@ export default {
   data() {
     return {
       labelName: "标签",
+      isFromSubject: false,
       tableData: [],
       input1: "",
       states: "",
@@ -151,13 +152,10 @@ export default {
         tagName: "",
         subjectID: null,
         states: null,
-        counts: 0,
-        pages: 0,
       },
       showAddTags: false,
       currentabc: false,
       editsList: {},
-      isFromSubject: false,
     };
   },
 
@@ -172,11 +170,6 @@ export default {
     },
   },
 
-  created() {
-    this.page.subjectID = Number(this.$route?.query?.id);
-    this.getTags();
-  },
-
   watch: {
     "page.subjectID"(val) {
       if (val === undefined) {
@@ -185,6 +178,23 @@ export default {
         this.isFromSubject = true;
       }
     },
+    tableData: {
+      immediate: true,
+      handler(val) {
+        console.log(this.subjectID);
+        console.log(val.length);
+        if (val.length > 0 && this.subjectID === null) {
+          this.loading = false;
+        } else if (this.subjectID !== null) {
+          this.loading = false;
+        }
+      },
+    },
+  },
+
+  created() {
+    this.page.subjectID = this.$route?.query?.id;
+    this.getTags();
   },
 
   methods: {
@@ -263,7 +273,7 @@ export default {
       this.currentabc = true;
       this.editsList = val;
       console.log(val);
-      this.showAddDirectorys = true;
+      this.showAddTags = true;
     },
   },
 };

@@ -76,7 +76,7 @@ export default {
       default: () => ({}),
     },
     subjectID: {
-      type: Number,
+      type: String,
       default: null,
     },
   },
@@ -116,7 +116,10 @@ export default {
           this.onClose();
           this.$emit("add-success");
         } else {
-          await add(this.ruleForm);
+          await add({
+            subjectID: parseInt(this.ruleForm.subjectID),
+            tagName: this.ruleForm.tagName,
+          });
           this.$message.success("添加成功");
           this.onClose();
           this.$emit("add-success");

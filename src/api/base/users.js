@@ -1,6 +1,6 @@
 import { createAPI } from '@/utils/request'
 
-export const list = data => createAPI('/users/', 'get', data)
+export const list = data => createAPI('/users', 'get', data)
 export const simple = data => createAPI('/users/simple', 'get', data)
 // 基础题库重名，更改
 export const simpleList = (data) => createAPI("/users/simple", "get", data);

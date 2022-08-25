@@ -2,6 +2,7 @@
   <div class="example">
     <quill-editor
       class="editor"
+<<<<<<< HEAD
       :value="value"
       :options="editorOption"
       @input.native="quillInput"
@@ -14,16 +15,29 @@
     <!-- <div class="output ql-snow">
       <div class="ql-editor" v-html="content"></div>
     </div> -->
+=======
+      ref="QuillEditor"
+      :options="editorOption"
+      v-model="table"
+      @change="$emit('send', table)"
+    />
+>>>>>>> task
   </div>
 </template>
 
 <script>
+<<<<<<< HEAD
 import { quillEditor, Quill } from "vue-quill-editor";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
 
 Quill.register("modules/ImageExtend", ImageExtend);
 // highlight.js style
 import hljs from "highlight.js";
+=======
+import { quillEditor } from "vue-quill-editor";
+
+// highlight.js style
+>>>>>>> task
 import "highlight.js/styles/tomorrow.css";
 
 // import theme style
@@ -48,6 +62,7 @@ export default {
         placeholder: "请在这里输入",
         theme: "snow", //主题 snow/bubble
         modules: {
+<<<<<<< HEAD
           ImageExtend: {
             loading: true,
             name: "img",
@@ -55,10 +70,17 @@ export default {
             response: (res) => {
               return res.info;
             },
+=======
+          history: {
+            delay: 1000,
+            maxStack: 50,
+            userOnly: false,
+>>>>>>> task
           },
           toolbar: {
             container: toolbarOptions,
             handlers: {
+<<<<<<< HEAD
               image: function () {
                 QuillWatch.emit(this.quill.id);
               },
@@ -70,12 +92,21 @@ export default {
           },
         },
       },
+=======
+              insertMetric: this.showHandle,
+            },
+          },
+        },
+      },
+      table:this.value,
+>>>>>>> task
     };
   },
   props: {
     value: {
       type: String,
     },
+<<<<<<< HEAD
   },
   computed: {},
 
@@ -93,6 +124,16 @@ export default {
     },
   },
   mounted() {},
+=======
+    table:{
+      type:String
+    }
+  },
+  mounted() {},
+  watch: {
+
+  },
+>>>>>>> task
 };
 </script>
 

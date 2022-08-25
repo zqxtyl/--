@@ -176,3 +176,12 @@ export const getDifficulty = (val) => {
   if (!val) return;
   return difficulty.find((item) => item.value == val)?.label;
 };
+export function filterAllHtmltag(html) {
+  return html.replace(/<.*?>/ig, '')
+}
+
+
+
+
+
+

@@ -108,8 +108,8 @@
         >
           <quillEdit
             @getQuillQusetionValue="getQuillQusetionValue"
-            v-model="formData.question"
             ref="quilleditQues"
+            :value="quillQuesValue"
           />
         </el-form-item>
         <!-- 单选框按钮 -->
@@ -121,7 +121,7 @@
               v-for="(item, index) in letters"
               :key="item"
             >
-              <el-radio :label="item">{{ item }}</el-radio>
+              <el-radio :label="item"> {{ item }} </el-radio>
               <el-input
                 style="width: 150px"
                 v-model="formData.options[index].title"
@@ -213,7 +213,7 @@
           >
         </el-form-item>
         <el-form-item label="解析视频" prop="videoURL">
-          <template>
+        <!-- <template>
             <div class="editPage__video">
               <div class="title">视频设置</div>
               <div class="img__con">
@@ -226,20 +226,32 @@
                   <video width="100%" height="100px" v-if="videoUrl">
                     <source :src="videoUrl" type="video/mp4" />
                   </video>
-                  <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" /> -->
+           
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  <!-- <el-progress
-                    v-if="videoFlag == true"
-                    type="line"
-                    :percentage="videoUploadPercent"
-                    style="margin-top: 30px"
-                  ></el-progress> -->
+
                 </el-upload>
 
-                <!-- <p>说明: 视频格式为mp4格式，每个视频大小不超过3m</p> -->
+               
               </div>
             </div>
-          </template>
+          </template> -->
+         
+          <div class="img__con">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :http-request="videoRequset"
+              :show-file-list="false"
+            >
+              <video width="100px" v-if="formData.videoURL">
+                <source :src="formData.videoURL" type="video/mp4" />
+              </video>
+              <i v-else class="el-icon-plus"></i>
+            </el-upload>
+
+            <p>视频格式为mp4格式，每个视频大小不超过3m</p>
+          </div>
+
 
           <el-input v-model="formData.videoURL"></el-input>
         </el-form-item>
@@ -251,17 +263,21 @@
           <quill-edit
             @getQuillAnswerValue="getQuillAnswerValue"
             ref="quilledit"
+            :value="quillAnswerValue"
           />
         </el-form-item>
         <el-form-item label="题目备注" prop="remarks">
           <el-input type="textarea" v-model="formData.remarks"></el-input>
         </el-form-item>
-        <el-form-item label="试题标签" prop="tags">
+        <el-form-item label="试题标签" prop="tags" class="tags">
           <el-select
             placeholder="请选择试题标签"
             v-model="tags"
             multiple
+            no-match-text="456"
             @change="handleTags"
+            filterable
+            allow-create
           >
             <el-option
               v-for="item in tagsList"
@@ -270,9 +286,15 @@
               :label="item.label"
             ></el-option>
           </el-select>
+          <!-- <el-input v-model="formData.tags" class="username"></el-input> -->
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="addQuestion">确认提交</el-button>
+          <el-button type="success" @click="addQuestion" v-if="$route.query.id"
+            >确认提交</el-button
+          >
+          <el-button type="primary" @click="addQuestion" v-else
+            >确认提交</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
@@ -292,11 +314,21 @@ import { simple as dirSimple } from "@/api/hmmm/directorys.js";
 import { simple as subSimple } from "@/api/hmmm/subjects.js";
 import quillEdit from "@/module-hmmm/components/quill-edit";
 import { citys, provinces } from "../../api/hmmm/citys";
-import { add } from "../../api/hmmm/questions";
+import {
+  add,
+  detail,
+  list as getList,
+  choice as getChoice,
+} from "../../api/hmmm/questions";
 export default {
   data() {
     return {
+
       videoUrl: "", //视频地址
+
+      inputsel: "",
+      quillAnswerValue: "",
+      quillQuesValue: "",
       //子组件验证
       valueValidate: true,
       qusevalueValidate: true,
@@ -369,6 +401,8 @@ export default {
     };
   },
   created() {
+    // console.log(this.$route.query.id);
+    // this.currentId = ;
     this.getSubList();
     this.getCompList();
     this.provinces = provinces();
@@ -377,11 +411,84 @@ export default {
     }
     this.provinceRules = false;
     // console.log(res);
+    // console.log(this.$route.query.id);
+    //获取试题回显
+    if (this.$route.query.id) {
+      this.getBackDetail();
+    }
   },
   components: {
     quillEdit,
   },
+  watch: {
+    //监听路由id
+    // deep: true,
+    "$route.query.id": {
+      handler(val) {
+        immediate: true;
+        // console.log(7879);
+        // console.log(val);
+        console.log(111);
+        //清空表单
+        this.$refs.form.resetFields();
+        this.$refs.quilleditQues._data.value = "";
+        this.$refs.quilledit._data.value = "";
+        (this.quillAnswerValue = ""),
+          (this.quillQuesValue = ""),
+          (this.checkBoxList = []);
+        this.checkList = [];
+        (this.letters = ["A", "B", "C", "D"]),
+          (this.checkboxLetters = ["A", "B", "C", "D"]),
+          (this.radioOption = "");
+        this.formData.question = "";
+        this.formData.answer = "";
+        this.tags = "";
+        this.formData.difficulty = "1";
+        this.formData.questionType = "1";
+        this.formData.options = [
+          { code: "A", title: "", img: "", isRight: false },
+          { code: "B", title: "", img: "", isRight: false },
+          { code: "C", title: "", img: "", isRight: false },
+          { code: "D", title: "", img: "", isRight: false },
+        ];
+      },
+    },
+  },
   methods: {
+    async getBackDetail() {
+      this.loading = true;
+      const { data } = await detail({
+        id: this.$route.query.id,
+      });
+      console.log(data);
+      //多选单选
+      this.changeSingleOrMulit(data.questionType);
+      //处理标签
+      this.tags = data.tags.split(",");
+      //处理多选单选
+      if (data.questionType == "1") {
+        const findItem = data.options.find((item) => item.isRight === 1);
+        // console.log(findItem);
+        this.radioOption = findItem?.code;
+      } else if (data.questionType == "2") {
+        let arr = [];
+        data.options.forEach((item) => {
+          arr.push(item.code);
+        });
+        console.log(arr.sort());
+        //排序
+        this.checkboxLetters = arr.sort();
+        data.options.forEach((item) => {
+          if (item.isRight === 1) {
+            this.checkBoxList.push(item.code);
+          }
+        });
+      }
+      this.quillAnswerValue = data.answer;
+      this.quillQuesValue = data.question;
+      this.formData = data;
+      this.loading = false;
+    },
     async getSubList() {
       const { data } = await subSimple();
       this.subList = data;
@@ -476,8 +583,7 @@ export default {
     //上传图片
     onRequest({ file }) {
       this.loading = true;
-      // id:AKIDkLkvwoT3Ur6C7UnwqVwA90mOo184wkQk
-      // keys:GYN3e8RYTDrJXa6OSIwOegV8YkjV3NVP
+
       //   console.log('上传')
       cos.putObject(
         {
@@ -495,6 +601,31 @@ export default {
             return this.$message.error("上传失败，请重试");
           }
           this.formData.options[this.Imgindex].img = "https://" + data.Location;
+          this.loading = false;
+        }
+      );
+    },
+    //视频处理
+    videoRequset({ file }) {
+      this.loading = true;
+
+      //   console.log('上传')
+      cos.putObject(
+        {
+          Bucket: "tciano-1313341659" /* 必须 */,
+          Region: "ap-nanjing" /* 存储桶所在地域，必须字段 */,
+          Key: file.name /* 必须 */,
+          StorageClass: "STANDARD",
+          Body: file, // 上传文件对象
+          onProgress: function (progressData) {
+            console.log(JSON.stringify(progressData));
+          },
+        },
+        (err, data) => {
+          if (err || data.statusCode !== 200) {
+            return this.$message.error("上传失败，请重试");
+          }
+          this.formData.videoURL = "https://" + data.Location;
           this.loading = false;
         }
       );
@@ -567,18 +698,32 @@ export default {
     },
     //添加试题
     async addQuestion() {
-      console.log(this.$refs.quilledit._data.value);
+      // console.log(this.$refs.quilledit._data.value);
       this.$refs.form.validate(async (validate) => {
         if (!validate) {
           this.$message.warning("请填写必填项");
         } else {
           await add(this.formData);
-          this.$message.success("试题添加成功");
+          if (this.$route.query.id) {
+            this.$router.back();
+            this.$message.success("修改成功");
+          } else {
+            this.$message.success("试题添加成功");
+            //跳转
+            this.$router.push("/questions/list");
+          }
+          // const list = await getList();
+          // const choice = await getChoice();
+          // console.log(res);
+          // console.log(list.data.items);
+          // console.log(choice.data.items);
           this.$refs.form.resetFields();
           //清空表单
           this.$refs.quilleditQues._data.value = "";
           this.$refs.quilledit._data.value = "";
-          this.checkBoxList = [];
+          (this.quillAnswerValue = ""),
+            (this.quillQuesValue = ""),
+            (this.checkBoxList = []);
           this.checkList = [];
           (this.letters = ["A", "B", "C", "D"]),
             (this.checkboxLetters = ["A", "B", "C", "D"]),
@@ -615,14 +760,16 @@ export default {
         isRight: false,
       });
     },
-
     //处理标签
-    handleTags(e) {
-      // console.log(e.target);
-      // console.log(this.formData.tags);
+    handleTags(event) {
+      console.log(event);
       const StringTags = this.tags.toString();
-      // console.log(a);
       this.formData.tags = StringTags;
+    },
+    ipt(event) {
+      // console.log(111);
+      console.log(event.target.value);
+      this.tagsList = event.target.value;
     },
   },
 };
@@ -710,6 +857,54 @@ export default {
         font-size: 18px;
       }
     }
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 16px;
+    color: #8c939d;
+    width: 350px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+  }
+  .avatar {
+    width: 350px;
+    height: auto;
+    display: block;
+  }
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  .img__con {
+    .el-button {
+      width: 100%;
+      margin: 10px 0 20px 0;
+    }
+  }
+  .tags.el-form-item {
+    position: relative;
+  }
+  .el-form-item .username.el-input {
+    position: absolute;
+    top: 0px;
+    left: 25px;
+    width: 190px;
+  }
+  .el-form-item .username.el-input input {
+    // border: 0px;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 15px;
   }
 }
 </style>

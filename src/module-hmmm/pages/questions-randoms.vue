@@ -76,7 +76,7 @@
           :current-page="Number(pages.page)"
           :total="randonList.counts"
           :page-size="Number(pages.size)"
-          :page-sizes="[5, 10, 20, 50]"
+          :page-sizes="[20, 30, 50, 100]"
           layout="prev, pager, next,sizes, jumper"
         >
         </el-pagination>

@@ -333,6 +333,9 @@ export default {
         this.form.remarks= "", //题目备注
         this.form.shortName= "", //企业简称
         this.form.keyword= "" //关键字
+        this.citys=[],
+        this.catalog=[]
+        this.tagsList=[]
 
     },
     // 子组件的 自定义事件

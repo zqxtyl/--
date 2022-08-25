@@ -51,7 +51,12 @@
         <el-table-column label="序号" type="index"></el-table-column>
         <el-table-column label="文章标题" prop="title">
           <template v-slot="{ row }">
-            {{ row.title }}<i @click="videoPopub(row)" v-if="row.videoURL" class="el-icon-video-camera-solid"></i>
+            {{ row.title
+            }}<i
+              @click="videoPopub(row)"
+              v-if="row.videoURL"
+              class="el-icon-video-camera-solid"
+            ></i>
           </template>
         </el-table-column>
         <el-table-column label="阅读数" prop="visits"></el-table-column>
@@ -160,11 +165,17 @@
     <!-- 预览弹层 -->
 
     <!-- 视频弹层 -->
-    <el-dialog title="播放视频" width="50%" :visible.sync='videoShow'>
-          <div class="videoOpup">
-            <meta name="referrer" content="no-referrer"/>
-            <video width="700px" height="500px" :src='videoObj.videoURL' controls='controls' v-if="videoShow"></video>
-          </div>
+    <el-dialog title="播放视频" width="50%" :visible.sync="videoShow">
+      <div class="videoOpup">
+        <meta name="referrer" content="no-referrer" />
+        <video
+          width="700px"
+          height="500px"
+          :src="videoObj.videoURL"
+          controls="controls"
+          v-if="videoShow"
+        ></video>
+      </div>
     </el-dialog>
     <!-- 视频弹层 -->
   </div>
@@ -172,6 +183,7 @@
 
 <script>
 import { status } from "@/api/hmmm/constants";
+import { html2Text } from "@/utils";
 import {
   list,
   add,
@@ -221,8 +233,8 @@ export default {
         id: null,
       },
       isShow: false,
-      videoShow:false,
-      videoObj:{},
+      videoShow: false,
+      videoObj: {},
       currentObj: {},
       editorOption: {
         placeholder: "请在这里输入",
@@ -349,14 +361,14 @@ export default {
       this.currentObj = obj;
       this.isShow = true;
     },
-    videoPopub(obj){
+    videoPopub(obj) {
       // console.log(obj.videoURL);
       // if(obj.videoURL[0] instanceof Number){
       //   this.$message.error('视频地址错误')
       // }
-      this.videoObj=obj
-      this.videoShow=true
-    }
+      this.videoObj = obj;
+      this.videoShow = true;
+    },
   },
   created() {
     this.getList();
@@ -403,7 +415,7 @@ export default {
   .pageIndex {
     margin-left: 800px;
   }
-  .videoOpup{
+  .videoOpup {
     display: flex;
     align-items: center;
     justify-content: center;

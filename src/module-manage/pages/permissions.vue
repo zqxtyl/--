@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
   <div>
     <div>
       <el-card shadow="always" style="margin: 20px">
@@ -89,7 +88,6 @@
       :visible.sync="editFormVisible"
       ref="detail"
     ></permissionEdit>
-=======
   <div class="app">
     <div class="header">
       <el-form :inline="true" class="title">
@@ -195,12 +193,12 @@
       ref="isedit"
       @newDataes="newDataIsedit"
     />
->>>>>>> task
+
+  </div>
   </div>
 </template>
 
 <script>
-<<<<<<< HEAD
 import permissionAdd from "../components/permissions-add.vue";
 import permissionEdit from "../components/edit";
 import inform from "../components/formper/index.vue";

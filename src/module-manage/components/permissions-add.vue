@@ -118,13 +118,9 @@ export default {
   },
   methods: {
     // 弹层显示
-<<<<<<< HEAD
     dialogFormV() {
       this.dialogFormVisible = true;
-=======
-    dialogFormV () {
-      this.dialogFormVisible = false
->>>>>>> task
+
     },
     // 弹层隐藏
     dialogFormH() {

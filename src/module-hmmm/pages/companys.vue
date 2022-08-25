@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="container">
     <div class="headers">
       <!-- 头部 -->
       <el-form :model="formBase" :inline="true" class="title">
@@ -309,7 +309,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-.app {
+.container {
   background-color: #f0f2f5;
   .headers {
     width: 1300px;

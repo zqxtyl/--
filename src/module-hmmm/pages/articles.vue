@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    负责人：张千禧
     <div class="header">
       <el-form :inline="true" class="title">
         <el-form-item>

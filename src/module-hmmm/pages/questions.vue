@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    负责人：金佳宇
     <el-card class="box-card" body-style="height:100%">
       <!-- 头部 -->
       <el-row type="flex" class="header_title">

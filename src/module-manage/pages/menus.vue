@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    负责人：张千禧
     <div class="header">
       <div style="margin-left: 770px">
         <el-button icon="el-icon-edit" size="mini" type="success" @click="addFn"

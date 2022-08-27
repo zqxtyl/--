@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    负责人：金佳宇
     <el-card class="box-card">
       <el-row type="flex" class="title">
         <el-col

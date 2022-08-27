@@ -1,5 +1,6 @@
 <template>
   <div>
+    负责人：汪毅琪
     <div>
       <el-card shadow="always" style="margin: 20px">
         <el-row :gutter="20">
@@ -168,6 +169,7 @@ export default {
       console.log(val);
       this.editFormVisible = true;
       const data = val.scope.row;
+      console.log(data);
       console.log(this.$refs.detail);
       this.$refs.detail.getUserDetail(data);
     },

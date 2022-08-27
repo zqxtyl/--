@@ -378,6 +378,7 @@ export default {
       //表格
       tableData: [],
       tableLength: this.tableData,
+      chkState: null,
     };
   },
   components: {
@@ -396,6 +397,7 @@ export default {
       const { data } = await choice({
         ...this.pageInfo,
         ...form,
+        chkState: this.chkState,
       });
 
       console.log(data);
@@ -596,28 +598,29 @@ export default {
     changeCheckState(val) {
       console.log(this.activeName, val);
       if (this.activeName === "second") {
-        this.getChoiceList({
-          chkState: 0,
-        });
+        this.chkState = 0;
+
+        this.getChoiceList();
         //待审核
         const awaitCheck = this.tableData.filter((item) => item.chkState === 0);
         this.tableData = awaitCheck;
         // console.log(awaitCheck);
       } else if (this.activeName === "third") {
-        this.getChoiceList({
-          chkState: 1,
-        });
+        this.chkState = 1;
+        this.getChoiceList();
         const passCheck = this.tableData.filter((item) => item.chkState === 1);
         this.tableData = passCheck;
       } else if (this.activeName === "fourth") {
-        this.getChoiceList({
-          chkState: 2,
-        });
+        this.chkState = 2;
+
+        this.getChoiceList();
         const rejectCheck = this.tableData.filter(
           (item) => item.chkState === 2
         );
         this.tableData = rejectCheck;
       } else {
+        this.chkState = null;
+
         this.getChoiceList();
         this.tableData = this.tableData;
       }

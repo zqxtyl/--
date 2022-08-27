@@ -16,7 +16,15 @@
         <el-row>
           <el-col :span="24">
             <el-row type="flex" justify="end" style="margin-bottom: 20px">
-              <el-button type="success" class="el-icon-edit" size="small"
+              <el-button
+                type="success"
+                class="el-icon-edit"
+                size="small"
+                @click="
+                  $router.push({
+                    name: 'questions-new',
+                  })
+                "
                 >新增试题</el-button
               >
             </el-row>
@@ -369,7 +377,7 @@ export default {
       },
       selectForm: {},
       pageInfo: {
-        page: 1,
+        page: "1",
         pagesize: 10,
       },
       total: 0,
@@ -421,6 +429,7 @@ export default {
       //   // this.tableData = this.tableData;
       // }
       this.tableData = data.items;
+      // this.activeName = 'first'
       if (this.tableData.length === 0 && this.pageInfo.page !== "1") {
         this.pageInfo.page -= 1;
         this.getChoiceList();
